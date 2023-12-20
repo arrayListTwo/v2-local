@@ -23,9 +23,9 @@ export default {
         console.error(e + 'testAxios')
       })
     },
-    testAxiosToo () {
+    async testAxiosToo () {
       this.cacheRequestConfig.forEach(config => {
-        _axios(config)
+        _axios(config).catch(e => console.log(e))
       })
     },
     ...mapMutations({

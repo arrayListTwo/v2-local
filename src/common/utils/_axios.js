@@ -2,7 +2,7 @@
  * 封装 axios
  */
 import axios from 'axios'
-import router from '../../router/index.js'
+import store from '../../store/index'
 
 const config = {
   // baseURL: Config.baseURL || '',
@@ -32,7 +32,7 @@ const _axios = axios.create(config)
 _axios.interceptors.request.use(
   originConfig => {
     // TODO 有 API 请求重新计时
-
+    console.log('originConfig: ', originConfig)
     const reqConfig = { ...originConfig }
 
     // step1: 容错处理
@@ -81,6 +81,7 @@ _axios.interceptors.request.use(
 // Add a response interceptor
 _axios.interceptors.response.use(
   async res => {
+    // console.log('res: ', res.config)
     const { code } = res.data
 
     return new Promise(async (resolve, reject) => {
@@ -95,10 +96,13 @@ _axios.interceptors.response.use(
         }
         return resolve(res.data)
       }
-      reject(res.data)
+      return axios.request(res.config).then(resTwo => resolve(resTwo.data)).catch(e => console.info(e))
+      // store.commit('SET_CACHE_REQUEST_CONFIG', [ res.config ])
+      // reject(res.data)
     })
   },
   error => {
+    console.log(error.response.config)
     if (!error.response) {
       // ElMessage.error('请检查 API 是否异常')
       console.log('error', error)
